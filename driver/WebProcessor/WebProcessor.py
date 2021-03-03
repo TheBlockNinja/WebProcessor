@@ -1,5 +1,5 @@
 from selenium import webdriver
-from driver.Requirements.GetRequirements import getGeckoDriver
+from driver.Requirements.GetRequirements import get_gecko_driver
 import os
 import re
 import requests
@@ -8,7 +8,7 @@ import requests
 class WebFilter:
     def __init__(self):
         self.data = {}
-        self.filter_attribution = "_attribution"
+        self.filter_attribution = "_attribute"
         self.filter_class = "_class"
         self.filter_class = "_tag"
         self.filter_class = "_id"
@@ -25,7 +25,7 @@ class WebProcessor:
     def __init__(self, show_window=False):
         self.main_driver = None
         self.show_window = show_window
-        getGeckoDriver()
+        get_gecko_driver()
 
     def load(self):
         try:
@@ -110,7 +110,7 @@ class WebProcessor:
                 print(E)
                 return False, None
             return True, output
-        if re.search("_attribution", element_type):
+        if re.search("_attribute", element_type):
             try:
                 output = previous_elements.get_attribute(name)
 

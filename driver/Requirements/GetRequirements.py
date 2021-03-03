@@ -6,20 +6,22 @@ import zipfile
 import tarfile
 from bs4 import BeautifulSoup
 import requests
-is_64bit = struct.calcsize('P') * 8 == 64
 
-
-def getGeckoDriver():
+def get_gecko_driver():
+    is_64bit = struct.calcsize('P') * 8 == 64
     print(os.getcwd())
     if len([x for x in os.listdir(os.getcwd()) if re.search("gecko", x)]) > 0:
         return True
+    inp = input("Would you like to install GeckoDriver(https://github.com/mozilla/geckodriver/releases)(y/n)?")
+    if not inp.lower() == "y":
+        return False
     system = platform.system()
     suffix = "32"
     if is_64bit:
         suffix = "64"
-    print(system)
+
     if system.lower() == "windows":
-        links = getLinks("win" + suffix)
+        links = get_links("win" + suffix)
         print(links[0])
         path = os.getcwd() +"/"+ links[0].split("/")[-1]
         print(path)
@@ -28,11 +30,11 @@ def getGeckoDriver():
             zip_ref.extractall(os.getcwd())
         return True
     if system.lower() == "linux":
-        links = getLinks("linux" + suffix)
+        links = get_links("linux" + suffix)
         extract_tar(links)
         return True
-    if system.lower() == "mac":
-        links = getLinks("mac" + suffix)
+    if system.lower() == "darwin":
+        links = get_links("macos")
         extract_tar(links)
         return True
     return False
@@ -47,9 +49,8 @@ def extract_tar(links):
     file.close()
 
 
-def getLinks(current_os):
-    URL = 'https://github.com/mozilla/geckodriver/releases'
-    page = requests.get(URL)
+def get_links(current_os):
+    page = requests.get('https://github.com/mozilla/geckodriver/releases')
     soup = BeautifulSoup(page.content, 'html.parser')
     links = soup.find_all('a')
     output = []

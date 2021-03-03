@@ -1,3 +1,16 @@
+## Main
+## Install
+```pip install WebProcessor```
+
+## Required
+GeckoDriver
+- This will be installed automaticly on first run
+
+## Functions
+
+
+## Uses
+```python
 from driver.WebProcessor.WebProcessor import WebProcessor
 
 wb = WebProcessor(show_window=False)
@@ -16,3 +29,15 @@ print(data)
 for i in range(len(data)):
     wb.download_img(file_name="test_"+str(i)+".png", direct=True,url=data[i])
 wb.stop()
+```
+
+download_img
+- If direct is False, it will take a screenshot of the webpage that is currently loaded
+```python
+for i in range(len(data)):
+    wb.load_page(data[i])
+    wb.download_img(file_name="test_"+str(i)+".png")
+wb.stop()
+```
+
+
