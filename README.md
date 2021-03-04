@@ -1,5 +1,8 @@
 ## Main
+THIS IS FOR EDUCATIONAL PURPOSES ONLY OR IF YOU HAVE CONSENT TO USE THAT SITES INFO!
 ## Install
+https://pypi.org/project/WebProcessor/0.1.2/
+
 ```pip install WebProcessor```
 
 ## Required

@@ -42,8 +42,9 @@ class WebProcessor:
     def stop(self):
         try:
             self.main_driver.close()
+            self.main_driver.quit()
         except Exception as e:
-            print("Failed to close driver")
+            print("Failed to close driver",e)
 
     def load_page(self, url):
         try:

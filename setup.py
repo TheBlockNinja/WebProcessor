@@ -2,8 +2,8 @@ from setuptools import setup
 
 setup(
     name='WebProcessor',
-    version='0.1.1',
-    description='A example Python package',
+    version='0.1.5',
+    description='A package for loading websites and extracting information: THIS IS FOR EDUCATIONAL PURPOSES ONLY OR IF YOU HAVE CONSENT TO USE THAT SITES INFO!',
     url='https://github.com/TheBlockNinja/WebProcessor',
     author='Seann Moser',
     author_email='seannsea@gmail.com',

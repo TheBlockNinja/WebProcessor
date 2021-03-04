@@ -10,12 +10,19 @@ import requests
 def get_gecko_driver():
     is_64bit = struct.calcsize('P') * 8 == 64
     print(os.getcwd())
-    if len([x for x in os.listdir(os.getcwd()) if re.search("gecko", x)]) > 0:
+    system = platform.system()
+    if system.lower() == "darwin" or system.lower() == "linux":
+        if len([x for x in os.listdir("/usr/local/bin") if re.search("gecko", x)]) > 0:
+            return True
         return True
+    else:
+        if len([x for x in os.listdir(os.getcwd()) if re.search("geckodriver.exe", x)]) > 0:
+            return True
+
     inp = input("Would you like to install GeckoDriver(https://github.com/mozilla/geckodriver/releases)(y/n)?")
     if not inp.lower() == "y":
         return False
-    system = platform.system()
+
     suffix = "32"
     if is_64bit:
         suffix = "64"
@@ -28,6 +35,7 @@ def get_gecko_driver():
         download_url(url=links[0], save_path=path)
         with zipfile.ZipFile(path, 'r') as zip_ref:
             zip_ref.extractall(os.getcwd())
+        os.remove(path)
         return True
     if system.lower() == "linux":
         links = get_links("linux" + suffix)
@@ -44,9 +52,14 @@ def extract_tar(links):
     path = os.getcwd() + "/" + links[0].split("/")[-1]
     print(path)
     download_url(url=links[0], save_path=path)
-    file = tarfile.open(path)
-    file.extractall(os.getcwd())
-    file.close()
+    i = input("extract to /usr/local/bin/ (y/n)?")
+    if i == "y":
+        file = tarfile.open(path)
+        file.extractall("/usr/local/bin/")
+        file.close()
+    else:
+        os.remove(path)
+
 
 
 def get_links(current_os):
