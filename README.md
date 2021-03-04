@@ -7,30 +7,30 @@ https://pypi.org/project/WebProcessor/0.1.2/
 
 ## Required
 GeckoDriver
-- This will be installed automaticly on first run
-
-## Functions
-
+- This will be installed automatically on first run
 
 ## Uses
 ```python
 from driver.WebProcessor.WebProcessor import WebProcessor
+from driver.WebProcessor.WebFilter import WebFilter
 
-wb = WebProcessor(show_window=False)
+wb = WebProcessor(show_window=False,req_user_input=True)
 wb.load()
 wb.load_page("https://github.com/TheBlockNinja/WebProcessor")
 
-filter_elements = {
-    "1_tag" : "link",
-    "2_attribute" : "href",
-    "3_contains" : "png"
-}
+wf = WebFilter()
+if not wf.load_filter("test_filter.json"):
+    wf.add_filter_data(wf.filter_tag,"link")
+    wf.add_filter_data(wf.filter_attribute,"href")
+    wf.add_filter_data(wf.filter_contains,"png")
+    wf.save_filter("test_filter.json")
 
-data = wb.filter_elements(filter_elements)
+data = wf.filter_elements(wb)
 print(data)
 
 for i in range(len(data)):
     wb.download_img(file_name="test_"+str(i)+".png", direct=True,url=data[i])
+
 wb.stop()
 ```
 

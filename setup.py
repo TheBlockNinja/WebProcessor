@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='WebProcessor',
-    version='0.1.5',
+    version='0.1.7',
     description='A package for loading websites and extracting information: THIS IS FOR EDUCATIONAL PURPOSES ONLY OR IF YOU HAVE CONSENT TO USE THAT SITES INFO!',
     url='https://github.com/TheBlockNinja/WebProcessor',
     author='Seann Moser',

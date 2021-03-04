@@ -3,29 +3,17 @@ from driver.Requirements.GetRequirements import get_gecko_driver
 import os
 import re
 import requests
-
-
-class WebFilter:
-    def __init__(self):
-        self.data = {}
-        self.filter_attribution = "_attribute"
-        self.filter_class = "_class"
-        self.filter_class = "_tag"
-        self.filter_class = "_id"
-        self.filter_class = "_text"
-        self.filter_contains = "_contains"
-        self.get_count = "count"
-        self.get_text = "text"
-
-    def get_filters(self):
-        return self.data
+import logging
+import urllib.request
 
 
 class WebProcessor:
-    def __init__(self, show_window=False):
+    def __init__(self, show_window=False, req_user_input=False, logging_level=logging.INFO):
+        logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging_level)
         self.main_driver = None
         self.show_window = show_window
-        get_gecko_driver()
+        if not get_gecko_driver(req_user_input):
+            logging.error("failed getting gecko driver")
 
     def load(self):
         try:
@@ -37,114 +25,47 @@ class WebProcessor:
                 os.environ['MOZ_HEADLESS_WIDTH'] = '1920'
                 self.main_driver = webdriver.Firefox()
         except Exception as e:
-            print(e)
+            logging.error(e)
 
     def stop(self):
         try:
             self.main_driver.close()
             self.main_driver.quit()
         except Exception as e:
-            print("Failed to close driver",e)
+            logging.error(e)
 
     def load_page(self, url):
         try:
+            logging.info("loading driver...")
             self.main_driver.get(url)
+            logging.info("finished loading driver")
         except Exception as e:
-            print("load_page error:", e)
+            logging.error(e)
 
-    def filter_elements(self, filters):
-        current_data = self.main_driver
-        for k in filters.keys():
-            if k == "skip":
-                continue
-            if k == "count":
-                return len(current_data)
-            if isinstance(current_data,list):
-                new_data = []
-                for i in current_data:
-                    passed, data = self.get_element(k, filters[k],
-                                                    previous_elements=i)
-                    if passed:
-                        if len(data) > 0:
-                            if isinstance(data,list):
-                                new_data += data
-                            else:
-                                new_data.append(data)
-                if len(new_data) == 1:
-                    current_data = new_data[0]
-                else:
-                    current_data = new_data
-                continue
-            passed, data = self.get_element(k, filters[k],
-                                            previous_elements=current_data)
-            if passed:
-                if len(data) > 0:
-                    current_data = data
-            else:
-                print("invalid filter")
-                return None
-        return current_data
-
-    def get_element(self, element_type, name, previous_elements=None):
-        if previous_elements is None:
-            previous_elements = self.main_driver
-        if re.search("_tag", element_type):
-            try:
-                output = previous_elements.find_elements_by_tag_name(name)
-            except Exception as E:
-                print(E)
-                return False, None
-            return True, output
-
-        if re.search("_id", element_type):
-            try:
-                output = previous_elements.find_elements_by_id(name)
-            except Exception as E:
-                print(E)
-                return False, None
-            return True, output
-
-        if re.search("_class", element_type):
-            try:
-                output = previous_elements.find_elements_by_class_name(name)
-            except Exception as E:
-                print(E)
-                return False, None
-            return True, output
-        if re.search("_attribute", element_type):
-            try:
-                output = previous_elements.get_attribute(name)
-
-            except Exception as E:
-                print(E)
-                return False, None
-            return True, output
-        if re.search("_text", element_type):
-            try:
-                output = previous_elements.text
-            except Exception as E:
-                print(E)
-                return False, None
-            return True, output
-        if re.search("_contains",element_type):
-            if re.search(name,previous_elements):
-                return True ,previous_elements
-            return True, ""
-        return False,""
-
-    def download_img(self, file_name, direct=False,url=""):
+    def download_img(self, file_name, direct=False, url=""):
         if direct:
             try:
-                img_data = requests.get(url).content
+                if url != "":
+                    img_data = requests.get(url).content
+                else:
+                    img_data = requests.get(self.main_driver.current_url).content
                 with open(file_name, 'wb') as handler:
                     handler.write(img_data)
             except Exception as e:
-                print(e)
+                logging.error(e)
                 return False, ""
             return True, file_name
         try:
             self.main_driver.save_screenshot(file_name)
         except Exception as e:
-            print(e)
+            logging.error(e)
             return False, ""
         return True, file_name
+
+    def download_video(self, file_name, url=""):
+        try:
+            if len(url) == "":
+                url = self.main_driver.current_url
+            urllib.request.urlretrieve(url, file_name)
+        except Exception as e:
+            logging.error(e)
